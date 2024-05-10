@@ -1,34 +1,38 @@
-﻿using System.Text.Json;
-using Indexer.Data;
+﻿using Epoche;
+using System.Text;
 
 namespace Indexer.Services
 {
     public class MerkleTreeService
     {
-        private const string File = "MerkleTree.json";
-
-        public async Task AddMerklerTree(MerkleTree tree)
+        private const int HashWidth = 20;
+        public byte[][][] CreateMerkleTree(int depth, byte[][] leaves)
         {
-            var jsonString = JsonSerializer.Serialize(tree);
+            var tree = new byte[depth + 1][][];
+            tree[0] = leaves;
 
-            await System.IO.File.WriteAllTextAsync(File, jsonString);
-        }
+            //Initialize arrays
+            for (var i = 1; i < depth + 1; i++)
+            {
+                tree[i] = new byte[tree[i - 1].Length / 2][];
+            }
 
-        public async Task UpdateMerklerTree(MerkleTree tree)
-        {
-            var jsonString = JsonSerializer.Serialize(tree);
+            //Hash leafs
+            for (var layer = 0; layer < depth; layer++)
+            {
+                for (var leaf = 0; leaf < tree[layer].Length; leaf += 2)
+                {
+                    List<byte> list = [];
+                    list.AddRange(tree[layer][leaf]);
+                    list.AddRange(tree[layer][leaf + 1]);
 
-            await System.IO.File.WriteAllTextAsync(File, jsonString);
-        }
-
-        public async Task<String?> GetMerklerTree()
-        {
-            var jsonString = await System.IO.File.ReadAllTextAsync(File);
-
-            return jsonString;
+                    //Apply hash function & save to the layer above
+                    var data = Keccak256.ComputeHash(Encoding.Default.GetString(list.ToArray()));
+                    tree[layer + 1][leaf / 2] = data.Take(HashWidth).ToArray();
+                    Console.WriteLine();
+                }
+            }
+            return tree;
         }
     }
 }
-
-
-
