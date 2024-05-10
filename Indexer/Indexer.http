@@ -1,0 +1,6 @@
+@Indexer_HostAddress = http://localhost:5053
+
+GET {{Indexer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
