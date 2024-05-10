@@ -34,5 +34,23 @@ namespace Indexer.Services
             }
             return tree;
         }
+
+        public byte[] GetMerkleProof(byte[][] merkleTree, int proofIndex)
+        {
+
+            byte[] proof = new byte[merkleTree.Length - 1];
+
+            for(var layerIndex = 0; layerIndex < merkleTree.Length-1; layerIndex++) 
+            {
+                var position = proofIndex & 0b1; //0 - left, 1 - right
+                var layer = merkleTree[layerIndex];
+
+                proof[layerIndex] = position == 0 ? layer[layerIndex + 1] : layer[layerIndex - 1];
+
+                proofIndex = proofIndex >> 1;
+            }
+
+            return proof;
+        }
     }
 }
