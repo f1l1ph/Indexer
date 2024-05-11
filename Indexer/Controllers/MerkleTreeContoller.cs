@@ -9,13 +9,34 @@ namespace Indexer.Controllers;
 [Route("[controller]")]
 public class MerkleTreeContoller(MerkleTreeService service) : ControllerBase
 {
-    [HttpPost("Create")]
-    public Task<OkObjectResult> CreateMerkleTree(int depth,byte[][] bottomLayer)
-    { 
-        return Task.FromResult(Ok(service.CreateMerkleTree(depth, bottomLayer)));
+    [HttpPost("Add")]
+    public OkObjectResult Add(byte[][] adress)
+    {
+        var adresses = service.LoadLeaves().ToList();
+        for (int i = 0; i < adress.Length; i++)
+        {
+            adresses.Add(adress[i]);
+        }
+        
+        service.SaveLeaves(adresses.ToArray());
+        return Ok("ok");
     }
 
-    [HttpGet("Proof")]
+    [HttpGet("GetAllTokens")]
+    public byte[][]? GetAll()
+    {
+        var adresses = service.LoadLeaves();
+        return adresses;
+    }
+
+    [HttpGet("GetProoFromAdress")]
+    public Task<OkObjectResult> GetProofFromAdress(byte[] adress)
+    {
+        var result = service.GetProofFromAddress(adress);
+        return Task.FromResult(Ok(result));
+    }
+
+    [HttpGet("GetProof")]
     public Task<OkObjectResult> GetMerkleProof(byte[][] bottomLayer, int proofIndex, int depth)
     {
         var proof = service.GetMerkleProof(service.CreateMerkleTree(depth, bottomLayer), proofIndex);

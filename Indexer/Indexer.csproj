@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="Keccak256" Version="1.0.0" />
+    <PackageReference Include="Nethereum.JsonRpc.Client" Version="4.20.0" />
+    <PackageReference Include="Nethereum.JsonRpc.WebSocketClient" Version="4.20.0" />
+    <PackageReference Include="Nethereum.RPC.Reactive" Version="4.20.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
